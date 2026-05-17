@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@500;700&display=swap');
+
+/* Container creating the scrolling track */
+.scrub-container {
+  background-color: #ffe5ec; /* Light pink background */
+  min-height: 300vh;         
+  position: relative;
+}
+
+/* The box that stays stuck to the viewport while you scroll */
+.sticky-video-wrapper {
+  position: sticky;
+  top: 180px; /* Accounts for fixed navbar height */
+  height: calc(100vh - 180px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Flex rows that aligns the video and text side-by-side */
+.video-text-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+  max-width: 90%;
+  width: 1200px;
+}
+
+/* Styling the video frame specifically */
+.scrub-video-frame {
+  max-width: 50%;   
+  max-height: 70vh;
+  border-radius: 20px;       
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); 
+}
+
+/* Styling the medium-pink text box */
+.info-text-box {
+  background-color: #f997a9; 
+  color: #ffffff;            
+  padding: 40px;
+  border-radius: 20px;
+  max-width: 45%;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
