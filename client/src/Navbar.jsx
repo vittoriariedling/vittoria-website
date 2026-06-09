@@ -25,13 +25,16 @@ function Navbar() {
               <Link className="nav-link" to="/">Home</Link>
             </li>
             <li className="nav-item px-4">
-              <Link className="nav-link" to="/coding-projects">Coding Projects</Link>
-            </li>
-            <li className="nav-item px-4">
               <Link className="nav-link" to="/study-abroad-newsletter">Study Abroad Newsletter</Link>
             </li>
             <li className="nav-item px-4">
-              <Link className="nav-link" to="/opinions-in-the-world">Opinions on the World</Link>
+              <Link className="nav-link" to="/around-the-world">Around the World</Link>
+            </li>
+            <li className="nav-item px-4">
+              <Link className="nav-link" to="/what-im-reading">What I'm Reading</Link>
+            </li>
+            <li className="nav-item px-4">
+              <Link className="nav-link" to="/coding-projects">Coding Projects</Link>
             </li>
           </ul>
         </div>

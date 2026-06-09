@@ -1,0 +1,56 @@
+[
+    { 
+        "id": 1, 
+        "title": "Shoe E-Commerce Platform", 
+        "tag": "Web Development", 
+        "imageURL": "Shoe.png", 
+        "githubURL": "https://github.com", 
+        "description": "A comprehensive description of your amazing coding project goes right here!" 
+    },
+
+    { 
+        "id": 2, 
+        "title": "Facial Recognition and Emotion Detection", 
+        "tag": "Computer Vision", 
+        "imageURL": "face.png", 
+        "githubURL": "https://github.com", 
+        "description": "A comprehensive description of your amazing coding project goes right here!" 
+    }, 
+
+    { 
+        "id": 3, 
+        "title": "Sentiment Analysis Model", 
+        "tag": "Machine Learning", 
+        "imageURL": "sentiment.png", 
+        "githubURL": "https://github.com", 
+        "description": "A comprehensive description of your amazing coding project goes right here!" 
+    },
+
+    { 
+        "id": 4, 
+        "title": "Project Sentinel", 
+        "tag": "Artificial Intelligence + Web Development", 
+        "imageURL": "Sentinel.png", 
+        "githubURL": "https://github.com/wickedproblemslab/sentinel", 
+        "description": "A comprehensive description of your amazing coding project goes right here!" 
+    },
+
+    { 
+        "id": 5, 
+        "title": "Carpool Paring Algorithm", 
+        "tag": "Software Engineering", 
+        "imageURL": "https://via.placeholder.com/300", 
+        "githubURL": "https://github.com/vittoriariedling/carpool", 
+        "description": "A comprehensive description of your amazing coding project goes right here!" 
+    },
+
+    { 
+        "id": 6, 
+        "title": "Skin Rash Detection Software", 
+        "tag": "Web Development + Artificial Intelligence", 
+        "imageURL": "https://via.placeholder.com/300", 
+        "githubURL": "https://github.com/vittoriariedling/rash-recognizer-v2-main", 
+        "description": "A comprehensive description of your amazing coding project goes right here!" 
+    }
+        
+]

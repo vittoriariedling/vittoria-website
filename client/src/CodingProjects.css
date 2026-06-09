@@ -1,0 +1,125 @@
+/* ─── Container ─────────────────────────────────────────────────────── */
+.projects-container {
+  background-color: var(--color-bg, #ffe5ec);
+  min-height: calc(100vh - var(--navbar-h, 120px));
+  padding-top: calc(var(--navbar-h, 120px) + 40px);
+  padding-bottom: calc(var(--navbar-h, 90px) + 40px); /* space for floating footer */
+}
+
+/* ─── Page Header ───────────────────────────────────────────────────── */
+.projects-page-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(2.6rem, 5vw, 4rem);
+  color: var(--color-brand, #cd496f);
+  margin-bottom: 18px;
+}
+
+.projects-page-description {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.5rem;
+  color: var(--color-text-soft, #7a4a5a);
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* ─── Card Link wrapper ─────────────────────────────────────────────── */
+.project-card-link {
+  text-decoration: none !important;
+  display: block;
+  height: 100%;
+}
+
+/* ─── Base card ─────────────────────────────────────────────────────── */
+.project-card {
+  background-color: var(--color-card, #f997a9) !important;
+  border: none !important;
+  border-radius: 20px !important;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 38px rgba(205, 73, 111, 0.2);
+}
+
+/* ─── Image ─────────────────────────────────────────────────────────── */
+.project-card-img {
+  height: 230px;
+  object-fit: cover;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.4s ease;
+}
+
+.project-card:hover .project-card-img {
+  transform: scale(1.04);
+}
+
+/* ─── Card body ─────────────────────────────────────────────────────── */
+.project-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  position: relative;
+  padding-bottom: 60px !important;
+}
+
+/* ─── Title & tag ───────────────────────────────────────────────────── */
+.project-card-title {
+  color: var(--color-white, #ffffff) !important;
+  font-size: 1.6rem !important;
+  padding-top: 0 !important;
+  font-family: 'Fredoka', sans-serif !important;
+}
+
+.project-tag {
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.25);
+  color: var(--color-white, #ffffff);
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+}
+
+/* ─── GitHub link ───────────────────────────────────────────────────── */
+.github-link-wrapper {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+}
+
+.github-link-btn {
+  color: var(--color-white, #ffffff) !important;
+  text-decoration: none !important;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  background-color: rgba(0, 0, 0, 0.15);
+  padding: 7px 16px;
+  border-radius: 10px;
+  font-size: 0.95rem !important;
+  transition: background-color 0.2s;
+}
+
+.github-link-btn:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* ─── Font helpers ───────────────────────────────────────────────────── */
+.cute-brand-font {
+  color: var(--color-white, #cd496f);
+  font-family: 'Fredoka', sans-serif;
+  text-decoration: none;
+}
+
+.cute-navbar-font {
+  font-family: 'Quicksand', sans-serif;
+}

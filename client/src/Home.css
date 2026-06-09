@@ -1,49 +1,132 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@500;700&display=swap');
 
-/* Container creating the scrolling track */
-.scrub-container {
-  background-color: #ffe5ec; /* Light pink background */
-  min-height: 300vh;         
-  position: relative;
+/* ═══════════════════════════════════════════════════════════════════
+   CSS DESIGN TOKENS  — single source of truth for the entire site
+   ═══════════════════════════════════════════════════════════════════
+
+   COLOUR PALETTE
+   ──────────────
+   --color-bg          #ffe5ec    Blush — page background (all pages)
+   --color-card        #f997a9    Flamingo — cards, panels, highlights
+   --color-brand       #cd496f    Rose — navbar, footer, CTAs, links
+   --color-brand-dark  #a03050    Deep rose — hover states
+   --color-text-dark   #3a1a28    Plum — headings
+   --color-text-mid    #4a2035    Dark mauve — body copy
+   --color-text-soft   #7a4a5a    Muted rose — captions, secondary
+   --color-white       #ffffff    White — text on coloured backgrounds
+
+   LAYOUT TOKENS
+   ─────────────
+   --navbar-h   120px   height of fixed navbar (Bootstrap py-5 bar)
+   --footer-h    90px   height of fixed footer  (18px top+bottom pad)
+
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  --navbar-h:      120px;
+  --footer-h:       90px;
+  --viewport-safe: calc(100vh - var(--navbar-h) - var(--footer-h));
+
+  --color-bg:         #ffe5ec;
+  --color-card:       #f997a9;
+  --color-brand:      #cd496f;
+  --color-brand-dark: #a03050;
+  --color-text-dark:  #3a1a28;
+  --color-text-mid:   #4a2035;
+  --color-text-soft:  #7a4a5a;
+  --color-white:      #ffffff;
 }
 
-/* The box that stays stuck to the viewport while you scroll */
+/* ─── Global page clearance ──────────────────────────────────────── */
+.main-content-wrapper {
+  padding-bottom: var(--footer-h);
+}
+
+/* ─── Scroll-scrub container ─────────────────────────────────────── */
+.scrub-container {
+  background-color: var(--color-bg);
+  min-height: 300vh;
+  position: relative;
+  padding-bottom: var(--footer-h);
+}
+
+/* ─── Sticky viewport-locked section ────────────────────────────── */
 .sticky-video-wrapper {
   position: sticky;
-  top: 180px; /* Accounts for fixed navbar height */
-  height: calc(100vh - 180px);
+  top: var(--navbar-h);
+  height: var(--viewport-safe);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
 
-/* Flex rows that aligns the video and text side-by-side */
+/* ─── Side-by-side layout ────────────────────────────────────────── */
 .video-text-container {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: stretch;          /* ← makes both children equal height */
   justify-content: center;
   gap: 50px;
   max-width: 90%;
   width: 1200px;
+  /* Constrain the overall height so nothing overflows the safe viewport */
+  max-height: calc(var(--viewport-safe) - 40px);
 }
 
-/* Styling the video frame specifically */
+/* ─── Video panel wrapper ────────────────────────────────────────── */
+/* Wrapping the video lets us use align-items:stretch while still
+   controlling the video's own aspect ratio via object-fit.          */
+.video-panel {
+  display: flex;
+  align-items: stretch;
+  max-width: 50%;
+  min-width: 0;
+}
+
+/* ─── Video / image frame ────────────────────────────────────────── */
 .scrub-video-frame {
-  max-width: 50%;   
-  max-height: 70vh;
-  border-radius: 20px;       
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); 
+  width: 100%;
+  height: 100%;           /* fill the panel height set by flex stretch */
+  object-fit: cover;      /* crop to fill instead of letterboxing       */
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  display: block;
 }
 
-/* Styling the medium-pink text box */
+/* ─── Info text box ──────────────────────────────────────────────── */
 .info-text-box {
-  background-color: #f997a9; 
-  color: #ffffff;            
+  background-color: var(--color-card);
+  color: var(--color-white);
   padding: 40px;
   border-radius: 20px;
   max-width: 45%;
+  flex: 1;                /* let it grow/shrink with the flex row      */
+  min-width: 0;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   text-align: left;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.15rem;
+  line-height: 1.8;
+  /* Scroll internally if text overflows the shared height */
+  overflow-y: auto;
+  /* Hide scrollbar visually while still scrollable */
+  scrollbar-width: none;
+}
+.info-text-box::-webkit-scrollbar { display: none; }
+
+/* ─── Shared font helpers (used across all pages) ────────────────── */
+.cute-font {
+  color: var(--color-brand);
+  font-family: 'Fredoka', sans-serif;
+}
+
+.cute-brand-font {
+  color: var(--color-brand);
+  font-family: 'Fredoka', sans-serif;
+  text-decoration: none;
+}
+
+.cute-navbar-font {
+  font-family: 'Quicksand', sans-serif;
 }

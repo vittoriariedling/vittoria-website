@@ -1,29 +1,33 @@
-/* Import fonts from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@500;700&display=swap');
 
-/* Main Navbar Style */
 .custom-navbar {
-  background-color: #e04c75; 
+  background-color: #cd496f; 
+  border-radius: 0 !important;
 }
 
-/* Brand/Title Adjustments */
+.custom-navbar .container-fluid {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
 .navbar-brand.cute-brand-font {
+  color:#ffffff;
   font-family: 'Fredoka', sans-serif;
-  font-size: 3rem !important; /* Made the title text even bigger! */
+  font-size: 2.6rem !important; 
   padding-top: 14px !important;  
   text-decoration: none;
 }
 
 /* Navigation Links (Tabs) Adjustments */
 .custom-navbar .nav-link {
-  font-size: 1.6rem !important; /* Made the tab text a lot bigger! */
+  font-size: 1.25rem !important; /* Made the tab text a lot bigger! */
+  color: rgba(255,255,255,0.9) !important;
   position: relative;
   transition: color 0.2s ease;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
 }
 
-/* --- THE FIXES --- */
-
-/* 1. Remove the annoying box outline when clicked or focused */
 .custom-navbar .nav-link:focus,
 .custom-navbar .navbar-brand:focus,
 .custom-navbar .nav-link:active,
@@ -32,8 +36,8 @@
   box-shadow: none !important;
 }
 
-/* 2. Add a cute underline on hover */
 .custom-navbar .nav-link:hover {
+  color: #ffffff !important;
   text-decoration: underline;
   text-underline-offset: 6px; /* Spaces the underline slightly below the text so it looks clean */
 }
@@ -41,16 +45,4 @@
 /* Overall text font structure */
 .cute-navbar-font {
   font-family: 'Quicksand', sans-serif;
-}
-
-/* 1. Square the corners of the navbar by removing the default border-radius */
-.custom-navbar {
-  background-color: #e04c75; 
-  border-radius: 0px !important; 
-}
-
-/* 2. Remove default inner padding that Bootstrap adds to the fluid container */
-.custom-navbar .container-fluid {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
 }
