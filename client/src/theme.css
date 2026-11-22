@@ -1,0 +1,272 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Sunset garden — design system
+   Colors, type and building blocks from the Figma designs. Every page
+   uses these tokens/classes so the site stays consistent.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* surfaces */
+  --bg: #f6e6e4;            /* blush page background */
+  --paper: #fbefeb;         /* cards, article sheet */
+  --paper-rim: #f7e9e6;     /* frame around photos on cards */
+  --line: #ecd5d0;
+
+  /* ink */
+  --ink: #344b3f;           /* deep green: headings, body, nav */
+  --ink-soft: #5d6f63;
+  --accent: #ac6b59;        /* terracotta: "corner of the world" */
+  --eyebrow: #8a5644;       /* dates, small labels */
+
+  /* garden palette (illustrations) */
+  --g-blue: #859eb5;
+  --g-sage: #647759;
+  --g-coral: #d69c85;
+  --g-sand: #e2bc93;
+  --g-pink: #e4c1ca;
+
+  /* card placeholders, in order */
+  --tile-1: #aebfca;
+  --tile-2: #aebaa3;
+  --tile-3: #d8b5a1;
+  --tile-4: #d8bac1;
+  --tile-5: #e2d1af;
+  --tile-6: #bfc3a5;
+
+  --tag-bg: #dde4d6;        /* topic pills, pull quotes */
+
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+
+  --radius-card: 16px;
+  --radius-photo: 12px;
+  --shadow-card: 0 10px 30px rgba(120, 70, 60, 0.10), 0 2px 6px rgba(120, 70, 60, 0.06);
+  --shadow-photo: 0 6px 18px rgba(52, 75, 63, 0.18);
+
+  --gutter: clamp(16px, 4.3vw, 62px);
+  --nav-h: 84px;
+}
+
+/* ── Reset (replaces the parts of Bootstrap's reboot the site relied on) ── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+p, ul, ol, dl, figure, blockquote { margin-top: 0; }
+p, ul, ol, dl { margin-bottom: 1rem; }
+figure, blockquote { margin-left: 0; margin-right: 0; }
+
+img, svg, video { vertical-align: middle; }
+
+button, input, select, textarea { font: inherit; color: inherit; margin: 0; }
+button { cursor: pointer; }
+button:disabled { cursor: default; }
+[hidden] { display: none !important; }
+
+/* Make a link's click area cover its nearest positioned ancestor (whole-card links). */
+.stretched-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ── Base ─────────────────────────────────────────────────────────── */
+
+html { font-size: 16px; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin: 0;
+}
+
+a { color: var(--ink); }
+a:hover { color: var(--accent); }
+
+:focus-visible {
+  outline: 3px solid rgba(172, 107, 89, 0.55);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+img { max-width: 100%; }
+
+/* ── Layout ───────────────────────────────────────────────────────── */
+
+.site-main {
+  position: relative;
+  min-height: calc(100vh - var(--nav-h));
+  overflow-x: clip;          /* decorations may bleed off the edge */
+}
+
+.page {
+  position: relative;
+  padding: 0 var(--gutter) 80px;
+}
+
+.page-inner {
+  position: relative;
+  z-index: 1;                /* above the garden decorations */
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: clamp(44px, 6.5vw, 72px);
+  letter-spacing: -0.025em;
+  line-height: 1;
+  margin: 0 0 28px;
+}
+
+.page-intro {
+  max-width: 640px;
+  margin: -12px 0 32px;
+  font-size: 18px;
+  color: var(--ink-soft);
+}
+
+/* ── Building blocks ──────────────────────────────────────────────── */
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--eyebrow);
+}
+
+.tag-pill {
+  display: inline-block;
+  background: var(--tag-bg);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.paper {
+  background: var(--paper);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+/* Photo with the soft rim + shadow used on cards and in articles */
+.photo-frame {
+  background: var(--paper-rim);
+  border-radius: calc(var(--radius-photo) + 6px);
+  padding: 8px;
+  box-shadow: var(--shadow-photo);
+}
+
+.photo-frame > img,
+.photo-frame > .tile {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-photo);
+}
+
+/* Colored placeholder with a big faint number (when there's no photo) */
+.tile {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--tile-1);
+  overflow: hidden;
+}
+
+.tile-number {
+  position: absolute;
+  top: 12%;
+  left: 7%;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(48px, 7vw, 96px);
+  line-height: 1;
+  color: rgba(52, 75, 63, 0.16);
+  user-select: none;
+}
+
+.text-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.text-link:hover { color: var(--accent); }
+
+.btn-round {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.btn-round:hover { transform: translateY(-1px); }
+.btn-round:disabled { opacity: 0.35; cursor: default; transform: none; }
+.btn-round.filled { background: var(--ink); color: var(--paper); }
+
+.btn {
+  display: inline-block;
+  border: none;
+  border-radius: 999px;
+  padding: 11px 22px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.btn:hover:not(:disabled) { background: #26392f; color: var(--paper); }
+.btn:disabled { opacity: 0.6; cursor: wait; }
+
+.btn-outline {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+}
+
+.btn-outline:hover:not(:disabled) { background: var(--tag-bg); color: var(--ink); }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 960px) {
+  :root { --nav-h: 72px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

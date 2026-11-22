@@ -1,0 +1,285 @@
+/* What I'm Reading — sunset garden style (tokens from theme.css) */
+
+/* A tall garden that stays put beside the list (only where there's room). */
+.books-garden-side {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: min(320px, calc((100vw - 880px) / 2));
+  height: calc(100vh - var(--nav-h));
+}
+
+.books-garden-left {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 220px;
+  height: 300px;
+}
+
+/* Grows out of the side garden along the bottom toward the centre/left. */
+.books-garden-bottom {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 78vw;
+  height: auto;
+  aspect-ratio: 1000 / 220;
+}
+
+@media (min-width: 1150px) {
+  .books-page .books-sprig { display: none; }
+}
+
+@media (max-width: 1149px) {
+  .books-garden-bottom,
+  .books-garden-side,
+  .books-garden-left { display: none; }
+}
+
+/* Title lines up with the other pages; the reading list itself stays narrow. */
+.books-list,
+.books-count {
+  max-width: 880px;
+}
+
+.books-sprig {
+  top: -10px;
+  right: 0;
+  width: 220px;
+  height: 220px;
+  transform: scaleX(-1);
+}
+
+/* ── Filter pills ─────────────────────────────────────────────────── */
+/* Top of the page: books read this year + currently reading */
+.books-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.books-year-count {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 150px;
+  padding: 18px 22px;
+  border-radius: var(--radius-card);
+  background: var(--ink);
+  color: var(--paper);
+}
+.books-year-count strong { font-family: var(--font-display); font-size: 44px; line-height: 1; }
+.books-year-count span { font-size: 14px; margin-top: 6px; }
+
+.reading-now { flex: 1; min-width: 0; }
+.reading-now .eyebrow { margin: 0 0 10px; }
+.reading-now-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.reading-now-card {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px 10px 10px;
+}
+.reading-now-cover .book-cover-img,
+.reading-now-cover .book-cover-fallback { border-radius: 5px; }
+.reading-now-cover { width: 48px; aspect-ratio: 2 / 3; overflow: hidden; border-radius: 5px; box-shadow: var(--shadow-photo); }
+.reading-now-cover .fallback-initials { font-size: 14px; }
+.reading-now-title { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 15px; line-height: 1.25; }
+.reading-now-author { margin: 2px 0 0; font-size: 13px; color: var(--ink-soft); }
+
+.books-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.books-filter {
+  border: 1.5px solid transparent;
+  background: var(--tag-bg);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.books-filter:hover { border-color: var(--ink); }
+
+.books-filter.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* ── List & cards ─────────────────────────────────────────────────── */
+.books-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.book-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px 96px 1fr;
+  gap: 22px;
+  align-items: start;
+  padding: 22px 26px 22px 20px;
+  transition: transform 0.2s ease;
+}
+
+.book-card:hover { transform: translateY(-2px); }
+
+.book-rank {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1;
+  color: rgba(52, 75, 63, 0.22);
+  padding-top: 6px;
+}
+
+.book-cover {
+  width: 96px;
+  aspect-ratio: 2 / 3;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--paper-rim);
+  box-shadow: var(--shadow-photo);
+}
+
+.book-cover-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.book-cover-fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.fallback-initials {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 30px;
+  color: rgba(52, 75, 63, 0.35);
+}
+
+.book-info {
+  min-width: 0;
+}
+
+.book-title {
+  font-size: 22px;
+  margin: 4px 0 4px;
+}
+
+.book-author {
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+
+.book-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.star-rating {
+  display: inline-flex;
+  gap: 2px;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.star.full { color: var(--accent); }
+.star.empty { color: rgba(172, 107, 89, 0.22); }
+.star.half {
+  background: linear-gradient(90deg, var(--accent) 50%, rgba(172, 107, 89, 0.22) 50%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.book-rating-num {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.book-review-section {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.book-review {
+  margin: 0 0 8px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink);
+}
+
+.book-review.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.review-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.books-count {
+  margin: 28px 0 0;
+  text-align: center;
+}
+
+/* ── Small screens ────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .books-sprig { width: 140px; height: 140px; opacity: 0.8; }
+}
+
+@media (max-width: 560px) {
+  .books-sprig { display: none; }
+  .book-card {
+    grid-template-columns: 72px 1fr;
+    gap: 14px;
+    padding: 16px;
+  }
+  .book-rank {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    font-size: 20px;
+    padding: 0;
+  }
+  .book-cover { width: 72px; }
+  .book-title { font-size: 18px; padding-right: 28px; }
+}

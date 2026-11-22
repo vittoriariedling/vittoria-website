@@ -1,0 +1,7 @@
+/* Decorative garden layers sit behind content and never take clicks. */
+.garden {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+}

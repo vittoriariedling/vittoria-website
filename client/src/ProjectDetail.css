@@ -1,0 +1,15 @@
+/* Project detail: builds on the newsletter entry's sheet layout (NewsletterDetail.css). */
+
+.project-title { margin-top: 16px; }
+
+.project-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 40px;
+  margin: 0 0 26px;
+}
+
+.project-meta dt { margin-bottom: 4px; }
+.project-meta dd { margin: 0; font-weight: 500; }
+
+.project-github { margin-bottom: 30px; }

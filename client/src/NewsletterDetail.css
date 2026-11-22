@@ -1,0 +1,173 @@
+/* Newsletter entry ("Newsletter entry 01" design) */
+
+.entry-page { padding-top: 0; }
+
+.entry-page .entry-garden {
+  top: 40px;
+  width: max(0px, calc((100% - 980px) / 2 + 40px));
+  max-width: 300px;
+  height: 1000px;
+}
+
+.entry-garden-left { left: 0; }
+.entry-garden-right { right: 0; }
+
+.entry-sheet {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 52px clamp(20px, 6.5vw, 64px) 48px;
+  box-shadow: none;
+}
+
+.entry-back {
+  display: block;
+  width: fit-content;
+  margin-bottom: 30px;
+}
+
+.entry-meta { margin-bottom: 14px; }
+
+.entry-title {
+  font-size: clamp(34px, 5vw, 56px);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin: 0 0 22px;
+  max-width: 760px;
+}
+
+.entry-lede {
+  font-size: 18px;
+  max-width: 720px;
+  margin: 0 0 28px;
+}
+
+/* Body text column */
+.entry-body {
+  max-width: 720px;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.entry-body p { margin: 0 0 1.15em; }
+
+.entry-subhead {
+  font-size: 24px;
+  margin: 1.7em 0 0.7em;
+}
+
+/* Figures */
+.entry-figure { margin: 0 0 1.6em; }
+
+.entry-figure img {
+  width: 100%;
+  height: auto;
+}
+
+.entry-figure figcaption {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+/* Wide figures use the sheet's full width, beyond the text column. */
+.entry-figure-wide { width: min(100%, 840px); }
+
+/* Tall (portrait) photos: cap the height and let the frame hug the image. */
+.entry-figure-wide .photo-frame { display: inline-block; max-width: 100%; }
+.entry-figure-wide img { width: auto; max-width: 100%; max-height: min(72vh, 640px); }
+
+.entry-lead { margin-bottom: 30px; }
+
+.entry-cover {
+  float: right;
+  width: min(42%, 320px);
+  margin: 0 0 18px 28px;
+}
+
+/* In the body, wide photos may extend past the 720px text column (desktop only). */
+@media (min-width: 1000px) {
+  .entry-body > .entry-figure-wide { width: calc(100% + 120px); max-width: 840px; }
+}
+
+/* Photo beside text */
+.entry-split {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 28px;
+  align-items: start;
+  margin: 0.5em 0 1.6em;
+}
+
+.entry-split.photo-right .entry-figure { order: 2; }
+.entry-split .entry-figure { margin: 0; }
+.entry-split p { margin: 0; }
+.entry-split-text p + p { margin-top: 1em; }
+
+/* Three photos in a row */
+.entry-trio {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0.5em 0 1.6em;
+}
+
+/* Rows with fewer than three photos share the width evenly (phones stack them anyway). */
+@media (min-width: 701px) {
+  .entry-trio:has(> .entry-figure:nth-child(2):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .entry-trio:has(> .entry-figure:only-child) { grid-template-columns: minmax(0, 1fr); max-width: 480px; }
+}
+.entry-trio .entry-figure { margin: 0; }
+.entry-trio .photo-frame { padding: 5px; }
+.entry-trio img { aspect-ratio: 3 / 4; object-fit: cover; }
+
+/* Pull quote */
+.entry-quote {
+  background: var(--tag-bg);
+  border-radius: var(--radius-photo);
+  padding: 18px 20px;
+  margin: 1.4em 0 1.6em;
+}
+
+.entry-quote .eyebrow { color: var(--ink); font-size: 9px; }
+.entry-quote p {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  margin: 6px 0 0;
+}
+
+.entry-footer {
+  clear: both;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 36px;
+  padding-top: 8px;
+}
+
+.entry-thanks {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.entry-missing { padding: 20px 0 40px; }
+
+/* Gardens only where there's room beside the sheet */
+@media (max-width: 1200px) {
+  .entry-page .entry-garden { display: none; }
+}
+
+@media (max-width: 700px) {
+  .entry-page { padding-left: 12px; padding-right: 12px; }
+  .entry-sheet { padding-top: 32px; }
+  .entry-split { grid-template-columns: 1fr; gap: 14px; }
+  .entry-split.photo-right .entry-figure { order: 0; }
+  .entry-trio { grid-template-columns: 1fr; }
+  .entry-trio img { aspect-ratio: 4 / 3; }
+  .entry-cover { float: none; width: 100%; margin: 0 0 24px; }
+}

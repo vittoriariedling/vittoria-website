@@ -1,0 +1,79 @@
+/* Newsletter list ("Newsletter" design) */
+
+/* The garden stays put while the cards scroll over it. */
+.newsletter-page .newsletter-garden {
+  position: fixed;
+  top: var(--nav-h);
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - var(--nav-h));
+  opacity: 0.95;
+}
+
+.newsletter-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px 44px;
+}
+
+.newsletter-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: var(--ink);
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.newsletter-card:hover { color: var(--ink); transform: translateY(-4px); }
+
+.newsletter-card .photo-frame {
+  position: relative;
+  z-index: 1;
+  padding: 7px;
+}
+
+.newsletter-card .photo-frame img,
+.newsletter-card .photo-frame .tile {
+  aspect-ratio: 16 / 9;
+  height: auto;
+  object-fit: cover;
+}
+
+.newsletter-card-body {
+  flex: 1;
+  margin: -12px 8px 0;
+  padding: 26px 20px 22px;
+  background: var(--paper);
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+}
+
+.newsletter-card-title {
+  font-size: 23px;
+  margin: 10px 0 10px;
+  letter-spacing: -0.01em;
+}
+
+.newsletter-card-preview {
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.newsletter-card:focus-visible { outline-offset: 6px; border-radius: var(--radius-card); }
+
+@media (max-width: 1080px) {
+  .newsletter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+}
+
+@media (max-width: 640px) {
+  .newsletter-grid { grid-template-columns: 1fr; }
+  .newsletter-page .newsletter-garden { opacity: 0.5; }
+}
