@@ -274,11 +274,6 @@ export default function TravelMap() {
     );
   };
 
-  const hintText = () =>
-    view === 'world'
-      ? 'Click a highlighted country to explore it • Click the US to see individual states'
-      : 'Click a highlighted state to explore it';
-
   return (
     <div className="page travel-page">
       <TravelGarden />
@@ -309,7 +304,7 @@ export default function TravelMap() {
                   <li key={label}><span className="map-legend-swatch" style={{ background: fill }} />{label}</li>
                 ))}
               </ul>
-              <p className="map-hint">{hintText()}</p>
+              {view !== 'world' && <p className="map-hint">Click a highlighted state to explore it</p>}
             </div>
           )}
         </div>
