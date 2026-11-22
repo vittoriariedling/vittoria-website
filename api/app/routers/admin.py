@@ -2,19 +2,23 @@ import uuid
 from datetime import timedelta
 from urllib.parse import urlencode
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select, update
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import func, select, update
 
 from app import sessions
 from app.config import get_settings
 from app.deps import AdminUser, SessionDep, require_admin
-from app.models import Invite, InviteKind, PasswordReset, Role, User
+from app.models import Invite, InviteKind, LoginEvent, PasswordReset, Role, User
 from app.schemas import (
     AdminUserOut,
     AdminUserUpdate,
     InviteCreate,
     InviteCreated,
     InviteOut,
+    LoginEventOut,
+    LoginSummaryOut,
     ResetLinkOut,
 )
 from app.security import generate_opaque_token, hash_opaque_token, utcnow
@@ -124,3 +128,53 @@ async def create_reset_link(user_id: uuid.UUID, admin: AdminUser, session: Sessi
                               expires_at=expires_at, created_by=admin.id))
     await session.commit()
     return ResetLinkOut(url=_link("/reset-password", token=token), expires_at=expires_at)
+
+
+# ── Login history ────────────────────────────────────────────────────
+
+
+@router.get("/logins", response_model=list[LoginEventOut])
+async def list_logins(
+    session: SessionDep,
+    user_id: uuid.UUID | None = None,
+    ip: Annotated[str | None, Query(max_length=64)] = None,
+    limit: Annotated[int, Query(ge=1, le=500)] = 100,
+):
+    """Most recent login attempts first, optionally for one account and/or IP."""
+    q = (
+        select(LoginEvent, User.display_name, User.email)
+        .join(User, User.id == LoginEvent.user_id)
+        .order_by(LoginEvent.created_at.desc())
+        .limit(limit)
+    )
+    if user_id is not None:
+        q = q.where(LoginEvent.user_id == user_id)
+    if ip is not None:
+        q = q.where(LoginEvent.ip == ip)
+    rows = await session.execute(q)
+    return [
+        LoginEventOut(id=e.id, user_id=e.user_id, display_name=name, email=email, ip=e.ip,
+                      user_agent=e.user_agent, success=e.success, created_at=e.created_at)
+        for e, name, email in rows
+    ]
+
+
+@router.get("/logins/summary", response_model=list[LoginSummaryOut])
+async def login_summary(session: SessionDep):
+    """One row per (account, IP) pair, most recently seen first."""
+    q = (
+        select(
+            LoginEvent.user_id,
+            User.display_name,
+            User.email,
+            LoginEvent.ip,
+            func.count().filter(LoginEvent.success).label("successes"),
+            func.count().filter(~LoginEvent.success).label("failures"),
+            func.min(LoginEvent.created_at).label("first_seen"),
+            func.max(LoginEvent.created_at).label("last_seen"),
+        )
+        .join(User, User.id == LoginEvent.user_id)
+        .group_by(LoginEvent.user_id, User.display_name, User.email, LoginEvent.ip)
+        .order_by(func.max(LoginEvent.created_at).desc())
+    )
+    return [LoginSummaryOut.model_validate(r, from_attributes=True) for r in await session.execute(q)]

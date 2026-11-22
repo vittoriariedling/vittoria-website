@@ -4,3 +4,9 @@ export const formatDate = (iso) => (iso ? dateFmt.format(new Date(iso)) : '—')
 
 const STATUS_LABELS = { active: 'Active', used: 'Used up', expired: 'Expired', revoked: 'Revoked' };
 export const statusLabel = (s) => STATUS_LABELS[s] ?? s;
+
+const dateTimeFmt = new Intl.DateTimeFormat(undefined, {
+  month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
+});
+
+export const formatDateTime = (iso) => (iso ? dateTimeFmt.format(new Date(iso)) : '—');

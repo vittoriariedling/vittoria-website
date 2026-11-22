@@ -5,7 +5,7 @@ from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
-from app import sessions
+from app import logins, sessions
 from app.config import get_settings
 from app.deps import CurrentUser, SessionDep, require_trusted_origin
 from app.models import InviteKind, User
@@ -88,7 +88,9 @@ def _no_store(response: Response) -> None:
 
 
 async def _logged_in(session, user: User, request: Request, response: Response) -> TokenResponse:
-    refresh = await sessions.start_session(session, user, request)
+    logins.record_login(session, user, request, success=True)
+    await logins.prune_old(session)
+    refresh = await sessions.start_session(session, user, request)  # commits
     _set_refresh_cookie(response, refresh)
     _no_store(response)
     return _token_response(user)
@@ -116,6 +118,9 @@ async def login(body: LoginRequest, request: Request, response: Response, sessio
     user = await session.scalar(select(User).where(User.email == body.email))
     ok, new_hash = verify_password(body.password, user.password_hash if user else None)
     if not ok or user is None or not user.is_active:
+        if user is not None:
+            logins.record_login(session, user, request, success=False)
+            await session.commit()
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, INVALID_CREDENTIALS)
     # A successful login clears this email's attempt counters.
     limiter.forget(email_key)
