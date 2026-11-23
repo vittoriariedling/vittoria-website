@@ -136,3 +136,30 @@ class AdminUserUpdate(BaseModel):
 class ResetLinkOut(BaseModel):
     url: str
     expires_at: datetime
+
+
+# ── Login history ────────────────────────────────────────────────────
+
+
+class LoginEventOut(BaseModel):
+    id: uuid.UUID
+    user_id: uuid.UUID
+    display_name: str
+    email: str
+    ip: str | None
+    user_agent: str | None
+    success: bool
+    created_at: datetime
+
+
+class LoginSummaryOut(BaseModel):
+    """Logins grouped by account and IP address."""
+
+    user_id: uuid.UUID
+    display_name: str
+    email: str
+    ip: str | None
+    successes: int
+    failures: int
+    first_seen: datetime
+    last_seen: datetime

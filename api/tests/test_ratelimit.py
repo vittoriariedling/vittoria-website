@@ -1,5 +1,16 @@
+import asyncio
+
+from httpx import ASGITransport, AsyncClient
+
+from app.main import app
 from app.ratelimit import RateLimiter
-from tests.conftest import PASSWORD, login
+from tests.conftest import ORIGIN, PASSWORD, login
+
+
+def client_from(ip: str) -> AsyncClient:
+    """A test client whose requests come from the given IP address."""
+    return AsyncClient(transport=ASGITransport(app=app, client=(ip, 1234)),
+                       base_url="https://testserver.local", headers={"Origin": ORIGIN})
 
 
 async def test_login_locks_email_after_repeated_failures(client, user):
@@ -8,6 +19,38 @@ async def test_login_locks_email_after_repeated_failures(client, user):
     r = await login(client, password=PASSWORD)  # even the right password is refused now
     assert r.status_code == 429
     assert int(r.headers["retry-after"]) > 0
+
+
+async def test_lockout_from_one_ip_does_not_lock_out_the_owner(client, user):
+    # Someone hammering this email from their own IP only locks themselves out.
+    async with client_from("203.0.113.9") as attacker:
+        for _ in range(5):
+            await login(attacker, password="wrong wrong wrong")
+        assert (await login(attacker)).status_code == 429
+    async with client_from("198.51.100.7") as owner:
+        assert (await login(owner)).status_code == 200
+
+
+async def test_parallel_attempts_cannot_exceed_the_limit(client, user):
+    codes = await asyncio.gather(*(login(client, password="wrong wrong wrong") for _ in range(12)))
+    codes = [r.status_code for r in codes]
+    assert codes.count(401) == 5 and codes.count(429) == 7
+
+
+async def test_distributed_guessing_is_slowed_but_owner_still_gets_in(client, user, monkeypatch):
+    import app.routers.auth as auth
+    slept = []
+
+    async def fake_sleep(seconds):
+        slept.append(seconds)
+
+    monkeypatch.setattr(auth.asyncio, "sleep", fake_sleep)
+    for i in range(12):  # many IPs, each under its own limit
+        async with client_from(f"203.0.113.{i + 1}") as c:
+            assert (await login(c, password="wrong wrong wrong")).status_code == 401
+    assert slept and max(slept) <= auth.LOGIN_SLOWDOWN_MAX_SECONDS
+    async with client_from("198.51.100.7") as owner:
+        assert (await login(owner)).status_code == 200  # slowed, never refused
 
 
 async def test_login_lockout_is_per_email(client, user):

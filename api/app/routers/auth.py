@@ -1,14 +1,15 @@
+import asyncio
 from typing import Annotated
 
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
-from app import sessions
+from app import logins, sessions
 from app.config import get_settings
 from app.deps import CurrentUser, SessionDep, require_trusted_origin
 from app.models import InviteKind, User
-from app.ratelimit import limit_by_ip, limiter, too_many
+from app.ratelimit import client_ip, limit_by_ip, limiter
 from app.schemas import (
     InviteCheckResponse,
     LoginRequest,
@@ -32,8 +33,15 @@ INVALID_CREDENTIALS = "Invalid email or password"
 INVALID_INVITE = "This invite link is invalid or has expired"
 INVALID_RESET = "This reset link is invalid or has expired"
 
-# Failed logins allowed per email before a temporary lockout.
-LOGIN_EMAIL_FAILURES = (5, 15 * 60)
+# Login attempts allowed per email *from one IP* before that IP is locked out
+# for that email. Keyed on the IP so nobody can lock someone else out.
+LOGIN_ATTEMPTS_PER_IP = (5, 15 * 60)
+# Across all IPs, attempts on one email past this many in the window are slowed
+# down (never refused), so guessing from many machines stays slow while the
+# real owner can always still log in.
+LOGIN_SLOWDOWN_AFTER = 10
+LOGIN_SLOWDOWN_WINDOW = 15 * 60
+LOGIN_SLOWDOWN_MAX_SECONDS = 8
 # Refreshes allowed per login session (token family) per minute.
 REFRESH_PER_SESSION = (60, 60)
 
@@ -80,7 +88,9 @@ def _no_store(response: Response) -> None:
 
 
 async def _logged_in(session, user: User, request: Request, response: Response) -> TokenResponse:
-    refresh = await sessions.start_session(session, user, request)
+    logins.record_login(session, user, request, success=True)
+    await logins.prune_old(session)
+    refresh = await sessions.start_session(session, user, request)  # commits
     _set_refresh_cookie(response, refresh)
     _no_store(response)
     return _token_response(user)
@@ -96,14 +106,25 @@ async def _logged_in(session, user: User, request: Request, response: Response) 
 )
 async def login(body: LoginRequest, request: Request, response: Response, session: SessionDep):
     email_key = f"login-fail:{body.email}"
-    if (retry := limiter.retry_after(email_key, *LOGIN_EMAIL_FAILURES)) is not None:
-        raise too_many(retry)
+    ip_key = f"{email_key}:{client_ip(request)}"
+    # Check and count this attempt in one synchronous step, before any await, so
+    # a burst of parallel requests can't all slip past the limit.
+    limiter.hit(ip_key, *LOGIN_ATTEMPTS_PER_IP)
+    recent = limiter.count(email_key, LOGIN_SLOWDOWN_WINDOW)
+    limiter.record(email_key)
+    if recent >= LOGIN_SLOWDOWN_AFTER:
+        await asyncio.sleep(min(2 ** (recent - LOGIN_SLOWDOWN_AFTER), LOGIN_SLOWDOWN_MAX_SECONDS))
 
     user = await session.scalar(select(User).where(User.email == body.email))
     ok, new_hash = verify_password(body.password, user.password_hash if user else None)
     if not ok or user is None or not user.is_active:
-        limiter.record(email_key)
+        if user is not None:
+            logins.record_login(session, user, request, success=False)
+            await session.commit()
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, INVALID_CREDENTIALS)
+    # A successful login clears this email's attempt counters.
+    limiter.forget(email_key)
+    limiter.forget_prefix(f"{email_key}:")
     if new_hash:  # hashing parameters were upgraded since this hash was made
         user.password_hash = new_hash
     return await _logged_in(session, user, request, response)
@@ -237,5 +258,6 @@ async def reset_password(body: ResetPasswordRequest, session: SessionDep):
     # A password change logs out every existing session.
     await sessions.revoke_all_for_user(session, user.id)
     await session.commit()
-    # Clear any lockout from failed attempts before the reset.
+    # Clear any lockout or slowdown from failed attempts before the reset.
     limiter.forget(f"login-fail:{user.email}")
+    limiter.forget_prefix(f"login-fail:{user.email}:")

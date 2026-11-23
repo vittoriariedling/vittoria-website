@@ -2,6 +2,7 @@ import { useSearchParams } from 'react-router-dom';
 import { AdminGardenLeft, AdminGardenRight } from '../garden/scenes';
 import BooksPanel from './BooksPanel';
 import InvitesPanel from './InvitesPanel';
+import LoginsPanel from './LoginsPanel';
 import NewslettersPanel from './NewslettersPanel';
 import PlacesPanel from './PlacesPanel';
 import ProjectsPanel from './ProjectsPanel';
@@ -14,6 +15,7 @@ const TABS = [
   ['books', 'Books', BooksPanel],
   ['projects', 'Projects', ProjectsPanel],
   ['people', 'People', () => (<><InvitesPanel /><UsersPanel /></>)],
+  ['logins', 'Logins', LoginsPanel],
 ];
 
 export default function AdminPage() {

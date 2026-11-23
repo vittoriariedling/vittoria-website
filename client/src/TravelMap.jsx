@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import * as d3 from 'd3';
+import { feature } from 'topojson-client';
+// Bundled with the site (Vite copies them into /assets with a content hash).
+import WORLD_TOPO_URL from 'world-atlas/countries-110m.json?url';
+import US_TOPO_URL from 'us-atlas/states-10m.json?url';
 import useApi from './useApi';
 import PageStatus from './PageStatus';
 import { usePage } from './site/context';
@@ -11,11 +15,6 @@ import './TravelMap.css';
 
 /** Two-letter country code for a world-atlas feature. */
 const codeOf = (d) => ISO_NUM_TO_CODE[+d.id] || NAME_TO_CODE[d.properties?.name] || '';
-
-// topojson is loaded from a <script> tag in index.html (window.topojson).
-
-const WORLD_TOPO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
-const US_TOPO_URL    = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
 
 // Sunset-garden map palette. Land fills per status live in TravelMap.css
 // (keep them in sync with the legend colors here).
@@ -171,8 +170,6 @@ export default function TravelMap() {
   // ── WORLD MAP ────────────────────────────────────────────────────
   useEffect(() => {
     if (!topoWorld || !places || view !== 'world') return;
-    const topojson = window.topojson;
-    if (!topojson) { console.error('topojson not loaded'); return; }
 
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove();
@@ -182,7 +179,7 @@ export default function TravelMap() {
 
     const proj = d3.geoNaturalEarth1().scale(153).translate([W / 2, H / 2]);
     const path = d3.geoPath().projection(proj);
-    const countries = topojson.feature(topoWorld, topoWorld.objects.countries);
+    const countries = feature(topoWorld, topoWorld.objects.countries);
 
     svg.append('rect').attr('width', W).attr('height', H).attr('fill', MAP.sea);
     svg.append('path')
@@ -226,8 +223,6 @@ export default function TravelMap() {
   // ── US STATE MAP ─────────────────────────────────────────────────
   useEffect(() => {
     if (!topoUS || !places || view !== 'US') return;
-    const topojson = window.topojson;
-    if (!topojson) return;
 
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove();
@@ -237,7 +232,7 @@ export default function TravelMap() {
 
     const proj = d3.geoAlbersUsa().scale(1280).translate([W / 2, H / 2]);
     const path = d3.geoPath().projection(proj);
-    const states = topojson.feature(topoUS, topoUS.objects.states);
+    const states = feature(topoUS, topoUS.objects.states);
 
     svg.append('rect').attr('width', W).attr('height', H).attr('fill', MAP.sea);
 
@@ -274,11 +269,6 @@ export default function TravelMap() {
     );
   };
 
-  const hintText = () =>
-    view === 'world'
-      ? 'Click a highlighted country to explore it • Click the US to see individual states'
-      : 'Click a highlighted state to explore it';
-
   return (
     <div className="page travel-page">
       <TravelGarden />
@@ -309,7 +299,7 @@ export default function TravelMap() {
                   <li key={label}><span className="map-legend-swatch" style={{ background: fill }} />{label}</li>
                 ))}
               </ul>
-              <p className="map-hint">{hintText()}</p>
+              {view !== 'world' && <p className="map-hint">Click a highlighted state to explore it</p>}
             </div>
           )}
         </div>

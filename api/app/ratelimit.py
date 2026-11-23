@@ -43,6 +43,10 @@ class RateLimiter:
             return None
         return max(1, math.ceil(q[0] + window - now))
 
+    def count(self, key: str, window: float) -> int:
+        """How many hits `key` has within the window."""
+        return len(self._window(key, window, time.monotonic()))
+
     def record(self, key: str) -> None:
         self._hits.setdefault(key, deque()).append(time.monotonic())
 
@@ -55,6 +59,10 @@ class RateLimiter:
 
     def forget(self, key: str) -> None:
         self._hits.pop(key, None)
+
+    def forget_prefix(self, prefix: str) -> None:
+        for k in [k for k in self._hits if k.startswith(prefix)]:
+            del self._hits[k]
 
     def reset(self) -> None:
         self._hits.clear()

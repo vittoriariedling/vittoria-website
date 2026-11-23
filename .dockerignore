@@ -1,0 +1,12 @@
+# Build context for Dockerfile.web. The API image uses ./api as its own context.
+.git
+.env
+*.local
+node_modules
+dist
+api
+content
+deploy/backup.env
+client/src/assets
+Untitled
+CLAUDE-SECURITY-*
