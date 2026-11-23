@@ -31,8 +31,8 @@ if [ -n "${AGE_RECIPIENT:-}" ]; then
   upload="$dump.age"
 fi
 
-rclone copyto "$upload" "r2:$BACKUP_BUCKET/db/$(basename "$upload")"
-rclone delete --min-age "${KEEP_DAYS}d" "r2:$BACKUP_BUCKET/db/"
+./deploy/rclone.sh copyto "/backups/$(basename "$upload")" "r2:$BACKUP_BUCKET/db/$(basename "$upload")"
+./deploy/rclone.sh delete --min-age "${KEEP_DAYS}d" "r2:$BACKUP_BUCKET/db/"
 
 # Keep a week of copies on the server too.
 find "$LOCAL_DIR" -name 'db-*' -mtime +7 -delete

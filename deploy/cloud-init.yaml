@@ -3,8 +3,9 @@
 # (Ubuntu 24.04 LTS). Also add your SSH key in the Droplet form.
 #
 # Result: a `deploy` user with your SSH key, root and password logins off,
-# ufw + fail2ban, automatic security updates, Docker, a swap file, rclone and
-# age (for backups). Takes a few minutes after the Droplet boots; check with
+# ufw + fail2ban, automatic security updates, Docker, a swap file and age
+# (for backups; rclone runs from a pinned Docker image, see deploy/rclone.sh).
+# Takes a few minutes after the Droplet boots; check with
 #   cloud-init status --wait
 
 package_update: true
@@ -90,7 +91,6 @@ packages:
   - ufw
   - fail2ban
   - unattended-upgrades
-  - rclone
   - age
   - git
 

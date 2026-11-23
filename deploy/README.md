@@ -153,13 +153,13 @@ blocking something; see Maintenance.
 **Restore** (do this once as a test, so you know it works):
 
 ```sh
-# On the server: download the backup
-cd ~/site && set -a && . deploy/backup.env && set +a
-rclone lsf r2:backups/db/                      # pick a file
-rclone copy r2:backups/db/<file>.age ~/
+# On the server: download the backup into ~/backups
+cd ~/site
+./deploy/rclone.sh lsf r2:backups/db/                          # pick a file
+./deploy/rclone.sh copy r2:backups/db/<file>.age /backups/
 
 # On your computer (where the private key is): decrypt, then send it back
-scp deploy@<droplet-ip>:~/<file>.age .
+scp deploy@<droplet-ip>:~/backups/<file>.age .
 age --decrypt -i backup-key.txt -o db.dump <file>.age
 scp db.dump deploy@<droplet-ip>:~/
 
@@ -189,7 +189,7 @@ still on your computer.
 
   update it wherever it appears (`compose.yaml`, `compose.prod.yaml`,
   `compose.override.yaml`, `Dockerfile.web`, `api/Dockerfile`,
-  `deploy/export-dev-content.sh`), commit, then run `./deploy/deploy.sh`.
+  `deploy/export-dev-content.sh`, `deploy/rclone.sh`), commit, then run `./deploy/deploy.sh`.
   Major version bumps (Postgres 17 → 18) need a dump and restore, not just
   a new tag.
 - The site loads nothing from third-party CDNs: fonts, map data and scripts
