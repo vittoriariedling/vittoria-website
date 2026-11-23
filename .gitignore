@@ -43,3 +43,7 @@ content/
 
 # Backup credentials (server only)
 deploy/backup.env
+deploy/migrate.env
+
+# Database dumps for moving content to production (contain personal data)
+migration/

@@ -49,20 +49,36 @@ nano .env    # fill in every value
 ```
 
 The first start builds the images (a few minutes), runs database migrations,
-and Traefik fetches a Let's Encrypt certificate. Then create your admin
-account:
+and Traefik fetches a Let's Encrypt certificate.
+
+## 4. Move your content over
+
+Your dev database already has everything (your account, newsletters, books,
+projects, map), so copy it instead of re-importing.
+
+On **your computer**, with the dev stack running:
 
 ```sh
-docker compose -f compose.yaml -f compose.prod.yaml exec api \
-  python -m app.cli create-admin --email you@example.com --name "Your Name"
+cp deploy/migrate.env.example deploy/migrate.env   # fill in the R2 photos bucket + token
+./deploy/export-dev-content.sh                     # dumps the DB, copies photos to R2
+scp migration/dev.dump deploy@<droplet-ip>:~/
 ```
 
-To load your books/projects/photos, run the importer as in the main README,
-with the content copied to the server.
+On the **server**:
+
+```sh
+./deploy/import-content.sh ~/dev.dump
+rm ~/dev.dump
+```
+
+Log in with your dev email and password. Dev sessions and login history are
+dropped, and any unused invite/reset links from dev are cancelled. (Starting
+from scratch instead? Create an admin with
+`docker compose -f compose.yaml -f compose.prod.yaml exec api python -m app.cli create-admin --email you@example.com --name "Your Name"`.)
 
 Future deploys: push to GitHub, then `./deploy/deploy.sh` on the server.
 
-## 4. Database backups
+## 5. Database backups
 
 1. In Cloudflare, create a second private R2 bucket (e.g. `site-backups`)
    and an R2 API token with *Object Read & Write* on **that bucket only**.
