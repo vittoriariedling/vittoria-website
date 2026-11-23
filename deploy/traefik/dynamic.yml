@@ -17,6 +17,14 @@ http:
       middlewares: [security-headers, csp]
       tls:
         certResolver: letsencrypt
+    # www.example.com -> example.com (same path and query).
+    www:
+      rule: 'Host(`www.{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      service: noop@internal
+      middlewares: [www-to-apex]
+      tls:
+        certResolver: letsencrypt
 
   services:
     api:
@@ -29,6 +37,12 @@ http:
           - url: "http://web:8080"
 
   middlewares:
+    www-to-apex:
+      redirectRegex:
+        regex: '^https://www\.(.+)'
+        replacement: 'https://${1}'
+        permanent: true
+
     security-headers:
       headers:
         stsSeconds: 63072000
