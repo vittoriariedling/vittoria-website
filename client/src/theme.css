@@ -34,8 +34,8 @@
 
   --tag-bg: #dde4d6;        /* topic pills, pull quotes */
 
-  --font-display: 'Space Grotesk', system-ui, sans-serif;
-  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-display: 'Space Grotesk Variable', system-ui, sans-serif;
+  --font-body: 'DM Sans Variable', system-ui, sans-serif;
 
   --radius-card: 16px;
   --radius-photo: 12px;
