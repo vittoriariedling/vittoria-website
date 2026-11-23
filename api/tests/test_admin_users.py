@@ -105,3 +105,36 @@ async def test_reset_link_for_deactivated_user_refused(client, admin_headers, us
     await client.patch(f"/api/admin/users/{user.id}", json={"is_active": False}, headers=admin_headers)
     r = await client.post(f"/api/admin/users/{user.id}/password-reset", headers=admin_headers)
     assert r.status_code == 400
+
+
+# ── CLI reset link (for your own account) ────────────────────────────
+
+
+async def test_cli_reset_link_logs_out_and_resets(client, user):
+    from app.cli import make_reset_link
+
+    first = await make_reset_link("member@example.com")
+    url = await make_reset_link("member@example.com")  # replaces the first one
+    assert url.startswith("http://localhost:5173/reset-password?token=")
+
+    async with new_client() as member:
+        await login(member)
+        r = await client.post("/api/auth/password-reset", json={"token": _token(url), "password": NEW_PW})
+        assert r.status_code == 204
+        assert (await member.post("/api/auth/refresh")).status_code == 401
+    assert (await login(client, password=NEW_PW)).status_code == 200
+    r = await client.post("/api/auth/password-reset", json={"token": _token(first), "password": NEW_PW})
+    assert r.status_code == 400
+
+
+async def test_cli_reset_link_unknown_or_inactive():
+    import pytest
+
+    from app.cli import make_reset_link
+    from tests.conftest import make_user
+
+    with pytest.raises(LookupError):
+        await make_reset_link("nobody@example.com")
+    await make_user(email="gone@example.com", is_active=False)
+    with pytest.raises(LookupError):
+        await make_reset_link("gone@example.com")
