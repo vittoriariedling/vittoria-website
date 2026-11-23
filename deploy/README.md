@@ -25,12 +25,12 @@ any order. Steps 4 onward happen on the server.
    method; the free tier covers this site).
 2. Create two buckets, both private (the default):
    - `media` for photos
-   - `site-backups` for database backups
+   - `backups` for database backups
 3. Note your **account ID**: the S3 endpoint is
    `https://<account-id>.r2.cloudflarestorage.com`.
 4. **R2 → Manage API tokens → Create API token**, twice:
    - `site-photos`: *Object Read & Write*, applied to the `media` bucket only
-   - `site-backups`: *Object Read & Write*, applied to the `site-backups` bucket only
+   - `site-backups`: *Object Read & Write*, applied to the `backups` bucket only
 
    Each gives an **Access Key ID** and **Secret Access Key**. They're only
    shown once; keep them in your password manager.
@@ -155,8 +155,8 @@ blocking something; see Maintenance.
 ```sh
 # On the server: download the backup
 cd ~/site && set -a && . deploy/backup.env && set +a
-rclone lsf r2:site-backups/db/                      # pick a file
-rclone copy r2:site-backups/db/<file>.age ~/
+rclone lsf r2:backups/db/                      # pick a file
+rclone copy r2:backups/db/<file>.age ~/
 
 # On your computer (where the private key is): decrypt, then send it back
 scp deploy@<droplet-ip>:~/<file>.age .
