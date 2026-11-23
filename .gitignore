@@ -40,3 +40,6 @@ Untitled/
 
 # Private content (books, projects): kept locally, loaded by the importer
 content/
+
+# Backup credentials (server only)
+deploy/backup.env

@@ -1,0 +1,84 @@
+# Production overrides, used on the server instead of compose.override.yaml:
+#   docker compose -f compose.yaml -f compose.prod.yaml up -d --build
+# (deploy/deploy.sh runs this for you). See deploy/README.md.
+#
+# Only Traefik publishes ports (80/443). Postgres, the API and the web server
+# are reachable only on the internal Docker network.
+
+x-hardened: &hardened
+  security_opt:
+    - no-new-privileges:true
+  restart: unless-stopped
+
+services:
+  traefik:
+    <<: *hardened
+    image: traefik:v3.7@sha256:a6c0194dda77bcb804824580f36fa7edc56e315b1acfe933366c8b52844a78a4
+    command:
+      - --global.checkNewVersion=false
+      - --global.sendAnonymousUsage=false
+      - --log.level=INFO
+      - --accesslog=true
+      - --providers.file.filename=/etc/traefik/dynamic.yml
+      - --entryPoints.web.address=:80
+      - --entryPoints.web.http.redirections.entryPoint.to=websecure
+      - --entryPoints.web.http.redirections.entryPoint.scheme=https
+      - --entryPoints.websecure.address=:443
+      # Room for large photo uploads on slow connections.
+      - --entryPoints.websecure.transport.respondingTimeouts.readTimeout=600s
+      - --certificatesResolvers.letsencrypt.acme.email=${ACME_EMAIL:?set in .env}
+      - --certificatesResolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --certificatesResolvers.letsencrypt.acme.tlsChallenge=true
+    environment:
+      DOMAIN: ${DOMAIN:?set in .env}
+      S3_PUBLIC_URL: ${S3_PUBLIC_URL:?set in .env}  # allowed in the CSP for photos
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - letsencrypt:/letsencrypt
+    read_only: true
+    cap_drop: [ALL]
+    networks:
+      default:
+        # Fixed address so the API can trust exactly this proxy's
+        # X-Forwarded-For header (FORWARDED_ALLOW_IPS below).
+        ipv4_address: 172.30.0.10
+
+  web:
+    <<: *hardened
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    depends_on:
+      - api
+
+  api:
+    <<: *hardened
+    environment:
+      ENVIRONMENT: prod
+      FORWARDED_ALLOW_IPS: 172.30.0.10
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+
+  db:
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+          gateway: 172.30.0.1
+          # Containers without a fixed address get .128 and up, so nothing
+          # can take Traefik's .10.
+          ip_range: 172.30.0.128/25
+
+volumes:
+  letsencrypt:

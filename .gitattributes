@@ -1,0 +1,3 @@
+# Scripts and configs run on Linux servers
+*.sh text eol=lf
+deploy/** text eol=lf

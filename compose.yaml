@@ -1,10 +1,10 @@
 # Base services shared by every environment.
 # Dev:  `docker compose up`  (compose.override.yaml is merged in automatically)
-# Prod: `docker compose -f compose.yaml -f compose.prod.yaml up -d`  (later phase)
+# Prod: `docker compose -f compose.yaml -f compose.prod.yaml up -d --build`  (see deploy/README.md)
 
 services:
   db:
-    image: postgres:17-alpine
+    image: postgres:17-alpine@sha256:f9cf3e1f0066f0eb0c48707d864f0ac5941e9ff454a072077d97a4d278d07d73
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:?set in .env}

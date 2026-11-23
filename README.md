@@ -111,4 +111,6 @@ content/        books and coding projects source data (JSON, gitignored)
 scripts/        export-content.mjs (legacy content files -> JSON for the importer)
 compose.yaml            base services
 compose.override.yaml   local dev additions (auto-loaded)
+compose.prod.yaml       production: Traefik + nginx (see deploy/README.md)
+deploy/                 server setup, deploy and backup scripts
 ```

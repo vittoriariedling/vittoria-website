@@ -1,0 +1,65 @@
+# Traefik routing (file provider; Traefik never gets the Docker socket).
+# DOMAIN and S3_PUBLIC_URL come from the traefik container's environment.
+
+http:
+  routers:
+    api:
+      rule: 'Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/api`)'
+      entryPoints: [websecure]
+      service: api
+      middlewares: [security-headers]
+      tls:
+        certResolver: letsencrypt
+    web:
+      rule: 'Host(`{{ env "DOMAIN" }}`)'
+      entryPoints: [websecure]
+      service: web
+      middlewares: [security-headers, csp]
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    api:
+      loadBalancer:
+        servers:
+          - url: "http://api:8000"
+    web:
+      loadBalancer:
+        servers:
+          - url: "http://web:8080"
+
+  middlewares:
+    security-headers:
+      headers:
+        stsSeconds: 63072000
+        stsIncludeSubdomains: true
+        contentTypeNosniff: true
+        frameDeny: true
+        referrerPolicy: strict-origin-when-cross-origin
+        permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=()"
+        customResponseHeaders:
+          Server: ""
+
+    # Content Security Policy: the browser only loads scripts, styles, fonts
+    # and data from this site itself, and photos/video from the media bucket.
+    # Anything else (an injected <script>, a third-party CDN) is refused.
+    csp:
+      headers:
+        contentSecurityPolicy: >-
+          default-src 'self';
+          script-src 'self';
+          style-src 'self';
+          img-src 'self' data: blob: {{ regexFind "^https?://[^/]+" (env "S3_PUBLIC_URL") }};
+          media-src 'self' {{ regexFind "^https?://[^/]+" (env "S3_PUBLIC_URL") }};
+          font-src 'self' data:;
+          connect-src 'self';
+          object-src 'none';
+          base-uri 'self';
+          form-action 'self';
+          frame-ancestors 'none';
+          upgrade-insecure-requests
+
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
