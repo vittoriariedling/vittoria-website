@@ -176,20 +176,17 @@ still on your computer.
 
 ## Maintenance
 
+The recurring checklist (weekly, monthly, quarterly, yearly) and what to do
+when something goes wrong are in [OPERATIONS.md](OPERATIONS.md).
+
 - Security updates install automatically; the server reboots at 04:30 UTC
   when one needs it, and the containers start again on their own.
 - Logs: `docker compose -f compose.yaml -f compose.prod.yaml logs -f api`
 - **Image updates are manual.** Every image is pinned by digest
   (`image:tag@sha256:...`), so nothing changes until you change it. Every
-  month or so, get the current digest for each tag:
-
-  ```sh
-  docker buildx imagetools inspect postgres:17-alpine | grep -m1 Digest
-  ```
-
-  update it wherever it appears (`compose.yaml`, `compose.prod.yaml`,
-  `compose.override.yaml`, `Dockerfile.web`, `api/Dockerfile`,
-  `deploy/export-dev-content.sh`, `deploy/rclone.sh`), commit, then run `./deploy/deploy.sh`.
+  month or so, run `./deploy/check-image-updates.sh` on your laptop. It
+  lists which tags have newer images and which files to update. Commit,
+  merge, then run `./deploy/deploy.sh` on the server.
   Major version bumps (Postgres 17 → 18) need a dump and restore, not just
   a new tag.
 - The site loads nothing from third-party CDNs: fonts, map data and scripts
